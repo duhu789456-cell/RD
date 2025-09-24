@@ -1,0 +1,989 @@
+.prescription-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.prescription-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.prescription-header h1 {
+  color: #2c3e50;
+  margin-bottom: 0.8rem;
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.prescription-header p {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.prescription-form {
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem 2.5rem 0.1rem 2.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e8f4fd;
+}
+
+.form-section {
+  margin-bottom: 0;
+  margin-top: 1.5rem;
+}
+
+.form-section h3 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 2px solid #4f8cff;
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  text-align: center;
+  width: 100%;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #34495e;
+  margin-bottom: 0.6rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.2px;
+  text-align: center;
+  display: block;
+}
+
+/* 주민등록번호 라벨 특별 스타일 */
+.resident-number-group label,
+label[for="residentNumber"],
+.form-group.resident-number-group > label,
+.resident-number-group > label {
+  text-align: left !important;
+  display: block !important;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 0.9rem;
+  border: 2px solid #ecf0f1;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: #fafbfc;
+  color: #2c3e50;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.5;
+}
+
+/* 주민등록번호 입력 스타일 */
+.resident-number-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.resident-input-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.resident-number-front {
+  width: 110px;
+  min-width: 110px;
+  flex-shrink: 0;
+}
+
+.resident-number-back {
+  width: 35px !important;
+  min-width: 35px !important;
+  max-width: 35px !important;
+  flex-shrink: 0;
+  padding: 0.9rem 0.3rem !important;
+}
+
+.resident-number-masked {
+  width: 110px;
+  min-width: 110px;
+  flex-shrink: 0;
+  background: #f8f9fa !important;
+  color: #6c757d !important;
+  cursor: not-allowed;
+  border-color: #dee2e6 !important;
+}
+
+.resident-number-masked:focus {
+  border-color: #dee2e6 !important;
+  box-shadow: none !important;
+  background: #f8f9fa !important;
+}
+
+.resident-number-separator {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #7f8c8d;
+  align-self: center;
+  margin: 0;
+  line-height: 1;
+  transform: translateY(-2px);
+}
+
+/* 약물정보 섹션 스타일 */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border-bottom: none;
+  padding-bottom: 0.5rem;
+}
+
+.section-header h3 {
+  margin: 0;
+  border-bottom: none !important;
+  padding-bottom: 0;
+  color: #253858;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  text-align: center;
+}
+
+.btn-add {
+  background: linear-gradient(90deg, #4f8cff 0%, #38cfa6 100%);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.3rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(79, 140, 255, 0.08);
+  transition: all 0.3s ease;
+  margin-bottom: 0;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.btn-add:hover {
+  background: linear-gradient(90deg, #38cfa6 0%, #4f8cff 100%);
+  box-shadow: 0 4px 16px rgba(79, 140, 255, 0.16);
+}
+
+.medication-card {
+  background: #f6f8fa;
+  border: 1.5px solid #e3e9f3;
+  border-radius: 14px;
+  padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 2px 8px rgba(60, 72, 88, 0.06);
+  transition: all 0.3s ease;
+  overflow: visible;
+}
+
+.medication-card.animate {
+  animation: slideInFromBottom 0.4s ease-out;
+}
+
+.medication-card.removing {
+  opacity: 0;
+  transform: translateY(-10px);
+  max-height: 0;
+  margin-bottom: 0;
+  padding: 0;
+  transition: all 0.15s ease-out;
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.medication-card:hover {
+  box-shadow: 0 6px 24px rgba(60, 72, 88, 0.13);
+}
+
+.medication-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.medication-header h3 {
+  margin: 0;
+  color: #253858;
+  font-size: 1.08rem;
+  font-weight: 700;
+  border-bottom: none !important;
+  padding-bottom: 0;
+  text-align: left;
+}
+
+.btn-remove {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  padding: 0.4rem 1.1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.08);
+  white-space: nowrap;
+  min-width: 60px;
+}
+
+.btn-remove:hover {
+  background: #c0392b;
+  box-shadow: 0 4px 16px rgba(231, 76, 60, 0.16);
+  transform: translateY(-1px);
+}
+
+.btn-remove:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.08);
+}
+
+.medication-grid-2row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.medication-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  width: 100%;
+}
+
+.form-group-1x {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group-1x label {
+  font-weight: 600;
+  color: #253858;
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.form-group-1x input {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1.5px solid #dbeafe;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #f6f8fa;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  color: #253858;
+  box-sizing: border-box;
+}
+
+.form-group-1x input:focus {
+  border-color: #4f8cff;
+  background: #fff;
+  box-shadow: 0 0 0 2px #b6d4fe;
+}
+
+.form-group-1x input[readonly] {
+  background-color: #f0f1f3;
+  color: #a0a4ab;
+  cursor: not-allowed;
+}
+
+.form-group-3x {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group-3x label {
+  font-weight: 600;
+  color: #253858;
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.form-group-3x input {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1.5px solid #dbeafe;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #f6f8fa;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  color: #253858;
+  box-sizing: border-box;
+}
+
+.form-group-3x input:focus {
+  border-color: #4f8cff;
+  background: #fff;
+  box-shadow: 0 0 0 2px #b6d4fe;
+}
+
+.form-group-equal {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group-equal label {
+  font-weight: 600;
+  color: #253858;
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.form-group-equal input {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  padding: 0.85rem 1rem;
+  border: 1.5px solid #dbeafe;
+  border-radius: 8px;
+  font-size: 1.02rem;
+  background: #f6f8fa;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  color: #253858;
+  box-sizing: border-box;
+}
+
+.form-group-equal input:focus {
+  border-color: #4f8cff;
+  background: #fff;
+  box-shadow: 0 0 0 2px #b6d4fe;
+}
+
+.input-equal {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  font-size: 1.02rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #ecf0f1;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 0.9rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.3px;
+  min-width: 120px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #229954 0%, #27ae60 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(39, 174, 96, 0.4);
+}
+
+.btn-secondary {
+  background: #95a5a6;
+  color: white;
+  box-shadow: 0 4px 12px rgba(149, 165, 166, 0.3);
+}
+
+.btn-secondary:hover {
+  background: #7f8c8d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(149, 165, 166, 0.4);
+}
+
+/* 환자 검색 버튼 스타일 */
+.btn-search {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.9rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  width: 100%;
+}
+
+.btn-search:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-search:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 환자 정보 표시 영역 */
+.patient-info-display {
+  background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+  border: 2px solid #27ae60;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.1);
+}
+
+.patient-info-display h4 {
+  color: #27ae60;
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.patient-info-display p {
+  margin: 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.patient-info-display strong {
+  color: #34495e;
+  font-weight: 600;
+}
+
+.measurement-info {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #bdc3c7;
+}
+
+.measurement-info h5 {
+  color: #2980b9;
+  margin: 0 0 0.8rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* select 스타일 */
+.form-group select {
+  padding: 0.9rem;
+  border: 2px solid #ecf0f1;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: #fafbfc;
+  color: #2c3e50;
+  cursor: pointer;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: #3498db;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.form-group select option {
+  background: white;
+  color: #2c3e50;
+}
+
+/* 비활성화된 버튼 스타일 */
+.btn-primary:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-primary:disabled:hover {
+  background: #bdc3c7;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 환자명과 주민등록번호 입력 그룹 레이아웃 */
+.patient-name-group {
+  flex: 0 0 50%;
+  min-width: 0;
+}
+
+.resident-number-group {
+  flex: 0 0 50%;
+  min-width: 0;
+}
+
+/* 환자명 입력 컨테이너 */
+.patient-name-input-container {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  position: relative;
+}
+
+.patient-name-input-container input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 환자명 라벨 중앙정렬 조정 */
+.patient-name-group label {
+  text-align: center !important;
+  padding-left: 40px; /* 아이콘 너비만큼 왼쪽 패딩 추가 */
+  box-sizing: border-box;
+}
+
+/* 주민등록번호 입력 영역 조정 */
+.resident-number-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+/* 상태 아이콘 컨테이너 */
+.status-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+/* 환자 상태 아이콘 스타일 */
+.status-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: bold;
+  animation: fadeIn 0.3s ease-in;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.status-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.status-icon.default {
+  background: #e6e6fa !important;
+  color: #5a5a5a !important;
+  opacity: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 18px !important;
+  z-index: 1 !important;
+  visibility: visible !important;
+}
+
+
+
+.status-icon.found {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+  transform: scale(1.05);
+}
+
+.status-icon.not-found {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}
+
+.status-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotate(-10deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 자동완성 컨테이너 */
+.autocomplete-container {
+  position: relative;
+  width: 100%;
+}
+
+/* 로딩 인디케이터 */
+.loading-indicator {
+  position: absolute !important;
+  right: 4px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 1000 !important;
+  left: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.autocomplete-container .loading-indicator {
+  right: 4px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+.spinner {
+  width: 12px !important;
+  height: 12px !important;
+  border: 1.5px solid #e3e9f3 !important;
+  border-top: 1.5px solid #4f8cff !important;
+  border-radius: 50% !important;
+  animation: spin 1s linear infinite !important;
+  min-width: 12px !important;
+  min-height: 12px !important;
+  max-width: 12px !important;
+  max-height: 12px !important;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 강력한 로딩 스피너 오버라이드 */
+.autocomplete-container .loading-indicator {
+  position: absolute !important;
+  right: 12px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 1000 !important;
+  left: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.autocomplete-container .loading-indicator .spinner {
+  width: 16px !important;
+  height: 16px !important;
+  border: 2px solid #e3e9f3 !important;
+  border-top: 2px solid #4f8cff !important;
+  border-radius: 50% !important;
+  animation: spin 1s linear infinite !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+  max-width: 16px !important;
+  max-height: 16px !important;
+  box-sizing: border-box !important;
+}
+
+/* 자동완성 드롭다운 */
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1.5px solid #dbeafe;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 16px rgba(60, 72, 88, 0.15);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 9999;
+  margin-top: -1px;
+}
+
+.suggestion-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f1f3;
+  transition: background-color 0.15s;
+  font-size: 0.95rem;
+  color: #253858;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover,
+.suggestion-item.active {
+  background-color: #f0f7ff;
+  color: #4f8cff;
+}
+
+.suggestion-item:hover {
+  background-color: #e6f3ff;
+}
+
+/* 자동완성 입력 필드 스타일 */
+.autocomplete-container input {
+  padding-right: 40px;
+}
+
+/* 스크롤바 스타일링 */
+.suggestions-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 입력 필드 크기 조정 */
+.input-long {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.input-short {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* 2행 구조 약물 입력 레이아웃 */
+.medication-grid-2row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.medication-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.form-group-3x {
+  flex: 3 1 0;
+  min-width: 0;
+}
+
+.form-group-1x {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.form-group-3x input,
+.form-group-1x input {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .medication-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .form-group-3x, .form-group-1x {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .prescription-container {
+    padding: 1.5rem;
+  }
+  
+  .prescription-form {
+    padding: 2rem;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .resident-number-inputs {
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+  
+  .medication-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .form-group-3x, .form-group-1x, .form-group-equal {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
+/* 토스트 알림 스타일 (NewAudit과 동일) */
+.toast-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  background: #28a745;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease-out;
+  max-width: 400px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toast-icon {
+  font-size: 1.5rem;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+} 

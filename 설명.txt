@@ -1,0 +1,257 @@
+## 📁 데이터 폴더 구조 및 파일 용도
+
+### 1. 데이터베이스 파일
+- **careplus.db**: SQLite 메인 데이터베이스 (환자, 처방, 감사 데이터 저장)
+- **careplus.db.backup_before_real_amount**: real_amount 필드 추가 전 백업 파일
+
+### 2. JSON 데이터 파일
+
+#### 2.1 dosagedata.json (용량 기준 데이터)
+- **용도**: 약물별 신기능에 따른 용량 기준 데이터
+- **크기**: 약 48만 개 항목
+- **주요 필드**:
+  - `drug_id`: 약물 식별자
+  - `품목명`: 약물 한글명
+  - `영문성분명`: 약물 영문 성분명
+  - `제형`: 약물 제형 (정제, 캡슐 등)
+  - `rf_indicator`: 신기능 지표 (crcl, ecrcl, egfr, scr)
+  - `crcl_min`, `crcl_max`: 신기능 범위 (CrCl 기준)
+  - `dose_amount`: 기준 용량
+  - `dose_unit`: 용량 단위
+  - `doses_per_interval`: 투여 횟수
+  - `interval_length_days`: 투여 간격 (일)
+  - `dialysis_required`: 투석 필요 여부
+  - `divided_dosing`: 분할 투여 여부
+  - `복약지도문구`: 환자 안내 문구
+
+#### 2.2 fda_data.json (FDA 데이터)
+- **용도**: FDA 승인 약물 정보 및 영문성분명 매칭
+- **크기**: 약 180만 개 항목
+- **주요 필드**:
+  - `품목명`: 약물 한글명
+  - `품목 영문명`: 약물 영문명
+  - `품목일련번호`: 약물 고유 번호 (HIRA의 품목기준코드와 매칭)
+  - `업체명`: 제조사명
+  - `전문일반`: 전문의약품/일반의약품 구분
+  - `효능효과`: 약물 효능
+  - `용법용량`: 사용법 및 용량
+  - `주의사항`: 사용 시 주의사항
+  - `표준코드`: 약물 표준 코드
+  - `영문성분명`: 약물 영문 성분명 (용량 판단에 사용)
+
+#### 2.3 hira_data.json (건강보험심사평가원 데이터)
+- **용도**: 건강보험 약가 정보 및 약물 검색
+- **크기**: 200MB 이상 (매우 큰 파일)
+- **주요 필드**:
+  - `한글상품명(약품규격)`: 약물 한글명 (검색 키)
+  - `품목기준코드`: 약물 고유 코드 (FDA의 품목일련번호와 매칭)
+  - `제형구분`: 약물 제형 (정제, 캡슐 등)
+  - 약물 가격 정보
+  - 보험 급여 정보
+  - 약가 기준 데이터
+
+## 🔍 약 용량 판단 로직 분석
+
+### 1. 감사 서비스 구조 (PrescriptionAuditService)
+
+#### 1.1 데이터 로딩 및 인덱싱
+```python
+# dosagedata.json을 메모리에 로드하고 drug_id별로 인덱싱
+# O(1) 시간 복잡도로 특정 약물의 용량 기준 데이터 조회 가능
+```
+
+#### 1.2 환자 신기능 값 매핑
+```python
+mapping = {
+    "crcl": patient.get("crcl", 0),           # 크레아티닌 클리어런스
+    "ecrcl": patient.get("crcl_normalization", 0),  # 정규화된 CrCl
+    "egfr": patient.get("egfr", 0),            # 추정 사구체 여과율
+    "scr": patient.get("scr_mg_dl", 0)         # 혈청 크레아티닌
+}
+```
+
+### 2. 용량 판단 알고리즘
+
+#### 2.1 최적 용량 기준 선택 로직
+1. **투석 환자 우선 처리**
+   - 투석 환자인 경우 `dialysis_required=True`인 행 우선 선택
+
+2. **신기능 범위 매칭**
+   - 환자의 신기능 값이 `crcl_min` ~ `crcl_max` 범위에 포함되는지 확인
+   - NaN 값은 무한대로 처리 (-9999 ~ 9999)
+
+3. **용량 적합성 검사**
+   - 기준 용량(`dose_amount`)이 환자 투여량 이상인지 확인
+   - 가장 가까운 용량의 기준을 선택
+
+#### 2.2 용량 계산 로직
+
+##### 단위별 용량 계산
+```python
+# 체표면적 기준 (밀리그램/제곱미터)
+if dose_unit == "밀리그램/제곱미터":
+    reference_dose = dose_amount * patient_bsa
+
+# 체중 기준 (밀리그램/킬로그램)
+elif dose_unit in ("밀리그램/킬로그램", "밀리그램/킬로그램/일", "밀리리터/킬로그램"):
+    reference_dose = dose_amount * patient_weight
+
+# 절대 용량 (마이크로그램, 밀리그램, 정, 밀리리터)
+else:
+    reference_dose = dose_amount
+```
+
+##### 투여 빈도 계산
+```python
+# 일일 투여 횟수 계산
+reference_frequency = doses_per_interval / interval_length_days
+```
+
+#### 2.3 감사 결과 판정
+
+##### 1. 금기 판정
+- `dose_amount = 0`인 경우 → "금기"
+
+##### 2. 용량 조절 필요 판정
+```python
+if divided_dosing:
+    # 분할 투여: 일일 총 용량으로 비교
+    patient_total = patient_amount * patient_doses_per_day
+    reference_total = reference_dose * reference_frequency
+    if patient_total > reference_total:
+        return "용량조절필요"
+else:
+    # 단일 투여: 회당 용량으로 비교
+    if patient_amount > reference_dose:
+        return "용량조절필요"
+```
+
+##### 3. 투여 간격 조절 필요 판정
+```python
+if patient_doses_per_day > reference_frequency * 1.5:
+    return "투여간격조절필요"
+```
+
+##### 4. 정상 판정
+- 위 조건들을 모두 통과하면 "-" (정상)
+
+### 3. 성능 최적화 기법
+
+#### 3.1 인덱싱 최적화
+- `drug_id`별로 데이터를 미리 인덱싱하여 O(1) 조회 시간 확보
+- 메모리 기반 인덱스로 디스크 I/O 최소화
+
+#### 3.2 계산 최적화
+- 환자 정보를 한 번만 계산하고 재사용
+- 불필요한 루프 제거 및 인라인 계산
+- NaN 값 처리 최적화
+
+#### 3.3 배치 처리
+- 여러 처방을 한 번에 감사하여 공통 계산 재사용
+- 리스트 크기 미리 할당으로 메모리 오버헤드 제거
+
+## 🔗 HIRA-FDA 데이터 매칭 로직
+
+### 1. 약물 검색 및 매칭 과정
+
+#### 1.1 HIRA 데이터에서 약물 검색
+```python
+# 1단계: HIRA 데이터에서 한글상품명으로 검색
+for item in hira_data:
+    if item["한글상품명(약품규격)"] == korean_drug_name:
+        item_standard_code = item["품목기준코드"]  # 품목기준코드 추출
+        break
+```
+
+#### 1.2 FDA 데이터에서 영문성분명 매칭
+```python
+# 2단계: FDA 데이터에서 품목일련번호로 매칭
+# 품목기준코드 = 품목일련번호 (동일한 값)
+fda_item = fda_index.get(str(item_standard_code))
+if fda_item:
+    english_ingredient = fda_item["영문성분명"]  # 영문성분명 추출
+```
+
+### 2. 데이터 매칭 흐름도
+
+```
+사용자 입력: 한글상품명(약품규격)
+        ↓
+HIRA 데이터에서 품목기준코드 조회
+        ↓
+FDA 데이터에서 품목일련번호로 매칭
+        ↓
+영문성분명 추출
+        ↓
+dosagedata.json에서 drug_id로 용량 기준 조회
+        ↓
+환자 신기능 값과 crcl 범위 매칭
+        ↓
+투석 여부 확인
+        ↓
+용량 기준 선택 (가장 적합한 행)
+        ↓
+단위별 용량 계산 (체중/체표면적 적용)
+        ↓
+divided_dosing 여부에 따른 용량 비교
+        ↓
+투여 빈도 확인
+        ↓
+감사 결과 반환 (금기/용량조절필요/투여간격조절필요/정상)
+```
+
+### 3. 핵심 매칭 키
+
+#### 3.1 HIRA → FDA 매칭
+- **HIRA**: `품목기준코드` (문자열)
+- **FDA**: `품목일련번호` (숫자 → 문자열 변환)
+- **매칭 방식**: `str(hira_item["품목기준코드"]) == str(fda_item["품목일련번호"])`
+
+#### 3.2 FDA → DOSAGE 매칭
+- **FDA**: `영문성분명`
+- **DOSAGE**: `영문성분명` + `drug_id`
+- **매칭 방식**: 영문성분명으로 dosagedata.json에서 해당 drug_id 조회
+
+### 4. 성능 최적화 기법
+
+#### 4.1 FDA 인덱싱
+```python
+# FDA 데이터 로드 시 품목일련번호별 인덱스 생성
+self.fda_index = {}
+for item in fda_data:
+    item_serial = item["품목일련번호"]
+    if item_serial:
+        self.fda_index[str(item_serial)] = item  # O(1) 조회
+```
+
+#### 4.2 DOSAGE 인덱싱
+```python
+# dosagedata.json 로드 시 drug_id별 인덱스 생성
+self.dosage_index = {}
+for row in dosage_data:
+    drug_id = row.get("drug_id")
+    if drug_id:
+        self.dosage_index[drug_id] = []  # O(1) 조회
+```
+
+## 📊 데이터 흐름도
+
+```
+환자 정보 + 처방 정보
+        ↓
+dosagedata.json에서 해당 drug_id 조회
+        ↓
+환자 신기능 값과 crcl 범위 매칭
+        ↓
+투석 여부 확인
+        ↓
+용량 기준 선택 (가장 적합한 행)
+        ↓
+단위별 용량 계산 (체중/체표면적 적용)
+        ↓
+divided_dosing 여부에 따른 용량 비교
+        ↓
+투여 빈도 확인
+        ↓
+감사 결과 반환 (금기/용량조절필요/투여간격조절필요/정상)
+```
