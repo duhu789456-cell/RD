@@ -180,8 +180,8 @@ dmypy.json
 *.bak
 *.tmp
 
-# Large data files (too big for GitHub)
-backend/data/hira_data.json
-backend/data/fda_data.json
-건강보험심사평가원_약가마스터_의약품표준코드_처리완료.csv
-RenalDose.tar.gz
+# Large data files are now handled by Git LFS
+# backend/data/hira_data.json
+# backend/data/fda_data.json
+# 건강보험심사평가원_약가마스터_의약품표준코드_처리완료.csv
+# RenalDose.tar.gz
